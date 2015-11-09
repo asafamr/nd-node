@@ -1,6 +1,6 @@
-# ND-Angular
+# ND-Node
 
-NDJS angualr front end
+NDJS node back end
 
 # Usage
 
@@ -10,6 +10,6 @@ soon
 
 AGPL 
 
-Packaged software doesn't need to disclose its sources
+Packaged software sources not required to be disclosed
 
 Contact me if you have a non-GPL poilcy
