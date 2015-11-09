@@ -1,0 +1,21 @@
+{
+    "browser": true,
+    "node": true,
+
+    "curly": true,
+    "eqeqeq": true,
+    "es3": true,
+    "newcap": false,
+    "noarg": true,
+    "nonew": true,
+    "quotmark": "single",
+    "strict": true,
+    "trailing": true,
+    "undef": true,
+    "unused": true,
+
+    "globals": {
+        "angular": true
+
+    }
+}
