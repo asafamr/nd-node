@@ -1,0 +1,21 @@
+{
+  "name": "nd-node",
+  "description": "NDJS node back end",
+  "version": "0.0.0",
+  "author": {
+    "name": "Asaf Amrami",
+    "email": "asaf_am@yahoo.com"
+  },
+
+  "main": "nd-node.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/c9/architect.git"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "license": "AGPL-1.0",
+
+
+}
