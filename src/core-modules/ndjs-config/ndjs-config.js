@@ -1,19 +1,48 @@
 'use strict';
-var path=require('path');
-var core=require('../../nd-node');
+
+var ndjsConfig={};
+module.exports=ndjsConfig;
+ndjsConfig.createModule=createModule;
+ndjsConfig.getName=function(){return '$config';};
+
+
+//var path=require('path');
 var _ =require('lodash');
-var logger=core.dRequire('logger');
 
+function createModule(backendInstance,registerActionClosure)
+{
+		var logger=backendInstance.getLogger();
+		//var utils=backendInstance.getUtils();
 
+		var installerMode='install';
+
+		var config=backendInstance.getConfig();
+
+		registerActionClosure('getPages',getPages);
+
+		function getPages()
+		{
+			var pages=_.property(installerMode+'.pages')(config);
+			if(pages===undefined)
+			{
+				logger.error('Pages for installer mode '+installerMode + ' missing');
+				return [];
+			}
+			return pages;
+		}
+
+}
+
+/*
 var endClientSettings={};
-var installerConfig={};
+
 
 var joinedSettings =Object.create(installerConfig);
 joinedSettings.user=endClientSettings;
 joinedSettings.duck={};
 joinedSettings.duck.desktop='C:\\Users\\asafa\\Desktop';
 var installerStage='install';
-module.exports=installerConfig;
+
 
 //installerConfig.getConfigFile=getConfigFile;
 installerConfig.getJobWithName=getJobWithName;
@@ -39,20 +68,15 @@ function activate()
 
 	var uiActions=core.dRequire('ui-actions');
 	logger.debug('registering config actions');
-	uiActions.registerAction('setUserSettings',['settingsDictionary'],setUserSettings);	
+	uiActions.registerAction('setUserSettings',['settingsDictionary'],setUserSettings);
 	uiActions.registerAction('getPages',[],getCurrentStagePages);
 }
 
-function getCurrentStagePages(callback)
-{
-	logger.debug('getCurrentStagePages');
-	callback(null,installerConfig[installerStage].pages);
-}
 function expandTemplate(str,data)
 {
 	//var joined =installerConfig;
 	//joined.user=endClientSettings;
-	
+
 	var lastStr='';
 	while(lastStr!==str)
 	{
@@ -99,4 +123,4 @@ function getJobWithName(name)
 	}
 	var errorStr='could not find job named ' + name + ' in '+installerStage;
 	throw new Error(errorStr);
-}
+}*/

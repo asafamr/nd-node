@@ -1,0 +1,22 @@
+
+[0m[0m
+[0m  backend instance[0m
+[0m    modules load dependencies[0m
+registering a custom module C:\ws\nd-node\test\back-instance-mocks/mock-module1
+registering a custom module C:\ws\nd-node\test\back-instance-mocks/mock-module2
+registering a custom module C:\ws\nd-node\test\back-instance-mocks/mock-module3
+finished loading modules
+[2K[0G    [32m  √[0m[90m load according to order[0m
+registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module1.js
+registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module2.js
+registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module3.js
+finished loading modules
+[2K[0G    [32m  √[0m[90m should get dependencies[0m
+registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module1.js
+registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module2.js
+registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module3.js
+[2K[0G    [32m  √[0m[90m should fail on cyclic depend[0m
+
+
+[92m [0m[32m 3 passing[0m[90m (47ms)[0m
+

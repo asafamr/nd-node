@@ -1,20 +1,22 @@
+(function(){
 'use strict';
 
-//require('process');
-var BPromise = require('bluebird');
-//var fse = require("fs");
-//var walk = require('walk');
-var path = require('path');
-var logger=null;
-
-//used to check if a module has already been required before
-var requiredCached={'logger':true};
-logger=dRequire('logger');
+var backendInstance = require('./src/backend-instance');
 
 
-var duckCore =  {};
-module.exports=duckCore;
 
+var ndNode =  {};
+module.exports=ndNode;
+ndNode.create=create;
+
+
+
+function create(ndConfigPath)
+{
+		return backendInstance.create(ndConfigPath);
+}
+
+/*
 var onLoadCallbacks=[];
 var ready=false;
 var coreLoaded=null;
@@ -33,8 +35,14 @@ activate();
 
 
 
+function getLogger()
+{
 
-
+}
+function getCoreModulePath(moduleName)
+{
+	return path.normalize(__dirname+'/core-modules/'+moduleName+'/'+moduleName);
+}
 
 function activate()
 {
@@ -125,5 +133,5 @@ function dRequire(what)
 
 function isLoaded(){
 	return ready;
-}
-
+}*/
+})();
