@@ -4,7 +4,6 @@ var backendInstance={};
 module.exports=backendInstance;
 backendInstance.create=create;//function create(ndConfigPath,logger)
 
-var utils= require('./utils');
 var logger= require('./logger');
 var path= require('path');
 var _= require('lodash');
@@ -13,11 +12,12 @@ var BBPromise= require('bluebird');
 
 var coreModules=
 [
-	'ndjs-config',
-	'ui-actions'//,
+	'config',
+	'ui-actions',
+	'notifications'
 	/*'job-manager',
   'nd-fs',
-	'notifications',
+	'',
 	'*/
 ];
 
@@ -28,18 +28,12 @@ function create(ndConfigPath)
 	var newBackendInstance={};
 	newBackendInstance.startLoad=startLoad;
 	newBackendInstance.registerModule=registerModule;
-	newBackendInstance.runAction=runAction;
   newBackendInstance.getConfigPath=function(){return ndConfigPath;};
   newBackendInstance.hasFinishedLoading=function(){return finishedLoading;};
-	newBackendInstance.getActions=function(){return Object.keys(registeredActions);};
-  //newBackendInstance.getLogger=function(){return logger;};
-  newBackendInstance.getUtils=function(){return utils;};
-  newBackendInstance.getConfig=function(){return _.clone(config,true);};
 
 
 	//private params
-	var config=utils.getFileContent(ndConfigPath);
-	var registeredActions={};
+
 	var modulePaths=_.map(coreModules,getCoreModulePath);
 	var startedLoading=false;
 	var finishedLoading=false;
@@ -114,21 +108,6 @@ function create(ndConfigPath)
 	{
       logger.debug('registering a custom module '+ path);
 			modulePaths.push(path);
-	}
-  /***
-    returns a promise with the action result
-  ***/
-	function runAction(actionName,params)
-	{
-
-    return new BBPromise(function (resolve, reject)
-    {
-      if(!registeredActions.hasOwnProperty(actionName))
-      {
-        reject('No action named '+actionName);
-      }
-      return BBPromise.resolve(registeredActions(actionName)(params));
-    });
 	}
 
 
