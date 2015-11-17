@@ -9,9 +9,8 @@ mod.getName=function(){return '$notifications';};
 mod.createModule=createModule;
 mod.$inject=['$uiActions'];
 
-function createModule(backendInstance,$uiActions)
+function createModule($uiActions)
 {
-	void backendInstance;
 	var notificationsModule={};
 	notificationsModule.getNotificationsFromIdx=getNotificationsFromIdx;
 	notificationsModule.pushNotification=pushNotification;

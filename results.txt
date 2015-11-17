@@ -2,27 +2,59 @@
 [0m[0m
 [0m  backend instance[0m
 [0m    modules load dependencies[0m
-registering a custom module C:\ws\nd-node\test\back-instance-mocks/mock-module1
-registering a custom module C:\ws\nd-node\test\back-instance-mocks/mock-module2
-registering a custom module C:\ws\nd-node\test\back-instance-mocks/mock-module3
-C:\ws\nd-node\test\mock-ndfile.js
+registering a custom module mock1
+registering a custom module mock2
+registering a custom module mock3
+Creating an instace of mock3
+Creating an instace of $backend
+Creating an instace of $uiActions
+Creating an instace of $state
+Creating an instace of $logger
+Creating an instace of mock1
+Creating an instace of $notifications
+Creating an instace of $config
+Creating an instace of mock2
+Creating an instace of $job
 finished loading modules
 [2K[0G    [32m  √[0m[90m load according to order[0m
-registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module1.js
-registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module2.js
-registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module3.js
-C:\ws\nd-node\test\mock-ndfile.js
+registering a custom module mock1
+registering a custom module mock2
+registering a custom module mock3
+Creating an instace of mock2
+Creating an instace of mock3
+Creating an instace of $backend
+Creating an instace of $uiActions
+Creating an instace of $state
+Creating an instace of $logger
+Creating an instace of mock1
+Creating an instace of $notifications
+Creating an instace of $config
+Creating an instace of $job
 finished loading modules
 [2K[0G    [32m  √[0m[90m should get dependencies[0m
-registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module1.js
-registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module2.js
-registering a custom module C:\ws\nd-node\test\back-instance-mocks\mock-module3.js
+registering a custom module mock1
+registering a custom module mock2
+registering a custom module mock3
 [2K[0G    [32m  √[0m[90m should fail on cyclic depend[0m
 
 [0m  config module[0m
 [2K[0G  [32m  √[0m[90m name should be $config[0m
-C:\ws\nd-node\test\mock-ndfile.js
-[2K[0G  [31m  1) should get all pages, one page by name and register action[0m
+[2K[0G  [32m  √[0m[90m should get all pages, one page by name and register action[0m
+
+[0m  job module[0m
+[0m    sfx mock[0m
+registering a custom module mock
+Creating an instace of $backend
+Creating an instace of $uiActions
+Creating an instace of $state
+Creating an instace of $logger
+Creating an instace of $notifications
+Creating an instace of $config
+Creating an instace of $job
+Creating an instace of mock
+finished loading modules
+[ 'main' ]
+[2K[0G    [32m  √[0m[90m should get all job names[0m
 
 [0m  notifications module[0m
 [2K[0G  [32m  √[0m[90m name should be $notifications[0m
@@ -37,38 +69,12 @@ C:\ws\nd-node\test\mock-ndfile.js
 [2K[0G  [32m  √[0m[90m actions number of arguments[0m
 [2K[0G  [32m  √[0m[90m actions run with arguments and return promise[0m
 
+[0m  moduleLoader[0m
+[0m    modules load by path[0m
+[2K[0G    [32m  √[0m[90m should be able to load from path[0m
+[2K[0G    [32m  √[0m[90m should be able to load from object[0m
+[2K[0G    [32m  √[0m[90m should be able to load a singleton[0m
 
-[92m [0m[32m 11 passing[0m[90m (76ms)[0m
-[31m  1 failing[0m
 
-[0m  1) config module should get all pages, one page by name and register action:
-
-      [31mAssertionError: expected { Object (name, type, ...) } to deeply equal { Object (names, type, ...) }[0m
-      [32m+ expected[0m [31m- actual[0m
-
-       {
-      [31m-  "name": "dir"[0m
-      [32m+  "names": "dir"[0m
-         "settings": {
-           "dir": "installDir"
-         }
-         "type": "directory"
-      [0m[90m
-      at assertEqual (C:\ws\nd-node\node_modules\chai\lib\chai\core\assertions.js:468:19)
-      at ctx.(anonymous function) (C:\ws\nd-node\node_modules\chai\lib\chai\utils\addMethod.js:40:25)
-      at doAsserterAsyncAndAddThen (C:\ws\nd-node\node_modules\chai-as-promised\lib\chai-as-promised.js:292:33)
-      at null.<anonymous> (C:\ws\nd-node\node_modules\chai-as-promised\lib\chai-as-promised.js:251:21)
-      at ctx.(anonymous function) [as equal] (C:\ws\nd-node\node_modules\chai\lib\chai\utils\overwriteMethod.js:48:33)
-      at C:\ws\nd-node\test\core-modules\config\config.spec.js:32:46
-      at bound (domain.js:254:14)
-      at runBound (domain.js:267:12)
-      at tryCatcher (C:\ws\nd-node\node_modules\bluebird\js\release\util.js:11:23)
-      at Promise._settlePromiseFromHandler (C:\ws\nd-node\node_modules\bluebird\js\release\promise.js:488:31)
-      at Promise._settlePromise (C:\ws\nd-node\node_modules\bluebird\js\release\promise.js:545:18)
-      at Promise._settlePromiseCtx (C:\ws\nd-node\node_modules\bluebird\js\release\promise.js:582:10)
-      at Async._drainQueue (C:\ws\nd-node\node_modules\bluebird\js\release\async.js:130:12)
-      at Async._drainQueues (C:\ws\nd-node\node_modules\bluebird\js\release\async.js:135:10)
-      at Immediate.Async.drainQueues [as _onImmediate] (C:\ws\nd-node\node_modules\bluebird\js\release\async.js:16:14)
-[0m
-
+[92m [0m[32m 16 passing[0m[90m (102ms)[0m
 

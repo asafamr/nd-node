@@ -7,14 +7,16 @@ backendInstance.create=create;//function create(ndConfigPath,logger)
 var logger= require('./logger');
 var path= require('path');
 var _= require('lodash');
-var toposort= require('toposort');
 var BBPromise= require('bluebird');
+var moduleLoader= require('./module-loader');
 
 var coreModules=
 [
 	'config',
 	'ui-actions',
-	'notifications'
+	'notifications',
+	'state',
+	'job'
 	/*'job-manager',
   'nd-fs',
 	'',
@@ -24,17 +26,18 @@ var coreModules=
 
 function create(ndConfigPath)
 {
-
+	var loadedModules={};
 	var newBackendInstance={};
 	newBackendInstance.startLoad=startLoad;
 	newBackendInstance.registerModule=registerModule;
   newBackendInstance.getConfigPath=function(){return ndConfigPath;};
-  newBackendInstance.hasFinishedLoading=function(){return finishedLoading;};
+	newBackendInstance.hasFinishedLoading=function(){return finishedLoading;};
+  newBackendInstance.getModule=function(name){return loadedModules[name];};
 
 
 	//private params
 
-	var modulePaths=_.map(coreModules,getCoreModulePath);
+	var moduleLoaders=[];
 	var startedLoading=false;
 	var finishedLoading=false;
 
@@ -52,48 +55,51 @@ function create(ndConfigPath)
 			}
 			startedLoading=true;
 
+			coreModules.forEach(function (moduleName){
+				moduleLoaders.push(moduleLoader.getLoader(getCoreModulePath(moduleName)));
+			});
+			moduleLoaders.push(moduleLoader.getLoader({instance:logger,getName:function(){return '$logger';}}));
+			moduleLoaders.push(moduleLoader.getLoader({instance:newBackendInstance,getName:function(){return '$backend';}}));
 
-      var modules=getModulesAndDependencies(modulePaths);
-      var modulesLoadOrder=getModulesLoadOrder(modules);
-      modules.$logger={module:null,dependencies:[],instance:logger};
+      //var modules=getModulesAndDependencies(modulePaths);
+      moduleLoaders=moduleLoader.getSortedByDepends(moduleLoaders);
+
+			var modulePromises={};
+
       //we will augment each module in modules with .instance - a member containg a promise returning its instance
-      modulesLoadOrder.forEach(
-  			function(moduleName)
+      moduleLoaders.forEach(
+  			function(moduleLoader)
   			{
 						//we init each module instance promise then create it when all dependcies are ready
-						modules[moduleName].instancePromise=new BBPromise(function (resolve){
-	            var requiredModule=modules[moduleName].module;
-	            if(!requiredModule)
-	            {
-	              throw new Error('Module '+requiredModule +' missing');
-	            }
+						modulePromises[moduleLoader.name]=new BBPromise(function (resolve){
+		            var args=
+		              _.map(moduleLoader.dependencies,
+		                function(name){ return modulePromises[name];}
+		              );//concat all dependencies
 
-	            var args=[newBackendInstance];//first argument is this new instance
+									resolve(BBPromise.all(args).then(//all dependencies have ben created - create this module now
+			              function(argValues)
+			              {
+											logger.debug('Creating an instace of '+moduleLoader.name);
+											var factoryRet=moduleLoader.factory.apply(newBackendInstance,argValues);
+											if(!factoryRet)
+											{
+												throw new Error(moduleLoader.name +' factory returned null');
+											}
+											return BBPromise.resolve(factoryRet).then(function(instResolved)
+											{
+												loadedModules[moduleLoader.name]=instResolved;
+												return instResolved;
+											});
 
-	            args=args.concat(
-	              _.map(modules[moduleName].dependencies,
-	                function(name){ return modules[name].instancePromise;}
-	              ));//concat all dependencies
-
-	            BBPromise.all(args).then(
-	              function(argValues)
-	              {
-	                //apply the createModule with the dependencies
-									var inst=modules[moduleName].module.createModule.apply(newBackendInstance,argValues);
-									BBPromise.resolve(inst).then(function(instResolved)
-									{
-										modules[moduleName].instance=instResolved;
-										resolve(instResolved);
-									});
-
-	              }
-	            );
+			              }
+			            ));
 						});
   			}
 			);
 
       //wait for all loading to complete and update status
-      return BBPromise.all(_.pluck(modules,'instancePromise')).then(
+      return BBPromise.all(_.values(modulePromises)).then(
         function()
         {
           logger.debug('finished loading modules');
@@ -104,94 +110,21 @@ function create(ndConfigPath)
 	}
 
 
-	function registerModule(path)
+	function registerModule(ndjsModule)
 	{
-      logger.debug('registering a custom module '+ path);
-			modulePaths.push(path);
+			var loader= moduleLoader.getLoader(ndjsModule);
+      logger.debug('registering a custom module ' +loader.name);
+			moduleLoaders.push(loader);
 	}
 
 
 }
 
-/**
-@param modules returned by getModulesAndDependencies : keys are module names, values are {module:module,depends:[<depends>]}
-@return  array of module names topologically sorted by dependencies(dependencies comes before dependents)
-**/
-function getModulesLoadOrder(modules)
-{
-    var graphEdges=[];
 
-    //add graphEdges each is like [depnds,dependency]
-    _.forEach(modules,function(moduleAndDepends,moduleName)
-    {
-      if(moduleAndDepends.dependencies===[])
-      {
-        graphEdges.push(['{}',moduleName]);
-      }
-      else {
-        moduleAndDepends.dependencies.forEach(
-          function(dependency)
-          {
-            if(!modules.hasOwnProperty(dependency))
-            {
-              throw new Error('Module '+dependency + ' not found and is required by '+moduleName);
-            }
-            graphEdges.push([dependency,moduleName]);
-          }
-        );
-      }
-    });
 
-    var modulesLoadOrder=[];
-    try {
-      modulesLoadOrder=_.filter(toposort(graphEdges),function(x){return x!=='{}';});//remove {} (the base of the graph)
-    } catch (e) {
-      throw new Error('Modules dependency order error: ' +e);
-    }
-    return modulesLoadOrder;
-}
 
-/**
-@param modulePaths array of paths to modules to be require()ed
-@return  an object : keys are module names, values are {module:module,depends:[<depends>]}
-**/
-function getModulesAndDependencies(modulePaths)
-{
-  var ret={};
-  modulePaths.forEach(
-    function(modulePath)
-    {
-        var requiredModule=require(modulePath);
-        //modules need to implement .getName() and create() method
-        if(!requiredModule.hasOwnProperty('getName') || !/^[0-9a-zA-Z$]+$/.test(requiredModule.getName()))
-        {
-          throw new Error('Module '+modulePath + ' getName() does not return a valid module name');
-        }
-        var moduleName=requiredModule.getName();
-
-        if(!requiredModule.hasOwnProperty('createModule'))
-        {
-          throw new Error('Module '+moduleName + ' does not implement createModule()');
-        }
-
-        //assert moudle name uniqueness
-        if(ret.hasOwnProperty(moduleName))
-        {
-          throw new Error(moduleName +' has already registered');
-        }
-
-        var dependencies=[];
-
-        if(requiredModule.hasOwnProperty('$inject'))
-        {
-            dependencies=requiredModule.$inject;
-        }
-
-        ret[moduleName]={module:requiredModule,dependencies:dependencies};
-    });
-    return ret;
-}
 function getCoreModulePath(moduleName)
 {
   return path.normalize(__dirname+'/core-modules/'+moduleName+'/'+moduleName);
 }
+

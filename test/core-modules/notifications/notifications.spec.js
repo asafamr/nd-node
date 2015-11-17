@@ -18,7 +18,7 @@ describe('notifications module', function(){
 
 		it('should register the get notificationsFromIdx', function(){
 			var mockBackend={};
-			var run=null;
+			var run=null;//TODO:change to a sinon spy
 			var uiactions={registerAction:
 				function(name,argNames,callback)
 			{
@@ -27,7 +27,7 @@ describe('notifications module', function(){
 				expect(argNames).to.deep.equal(['idx']);
 				run='all ok';
 			}};
-			var promise=BBPromise.resolve(uiActions.createModule(mockBackend,uiactions)).then(
+			var promise=BBPromise.resolve(uiActions.createModule(uiactions)).then(
 				function()
 				{
 					return run;

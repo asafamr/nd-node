@@ -4,17 +4,16 @@ var mod={};
 module.exports=mod;
 mod.createModule=createModule;
 mod.getName=function(){return '$config';};
-mod.$inject=['$uiActions','$state'];
+mod.$inject=['$backend','$uiActions','$state'];
 
 var _ =require('lodash');
 
-function createModule(backendInstance,$uiActions,$state)
+function createModule($backend,$uiActions,$state)
 {
 		var installerStage='install';
 		var config={};
 		// loads the config object above
-		console.log(backendInstance.getConfigPath());
-		require(backendInstance.getConfigPath())(getLoadingInterface());
+		require($backend.getConfigPath())(getLoadingInterface());
 
 		var configModule={};
 		configModule.getConfig=getConfig;
@@ -39,7 +38,7 @@ function createModule(backendInstance,$uiActions,$state)
 		}
 		function getConfig(path)
 		{
-			return _.cloneDeep(_.get(config[installerStage],path),parseStateStrings);
+			return _.cloneDeep(_.get(config[installerStage],path,parseStateStrings));
 		}
 		function getPage(name)
 		{

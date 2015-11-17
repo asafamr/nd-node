@@ -19,7 +19,9 @@
         "it":true,
         "should":true,
         "expect":true,
+        "beforeEach":true,
         "__dirname":true
+
 
 
 

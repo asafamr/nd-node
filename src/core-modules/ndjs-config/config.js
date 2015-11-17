@@ -4,12 +4,11 @@ var ndjsConfig={};
 module.exports=ndjsConfig;
 ndjsConfig.createModule=createModule;
 ndjsConfig.getName=function(){return '$config';};
-
-
+ndjsConfig.$inject=[''];
 //var path=require('path');
 var _ =require('lodash');
 
-function createModule(backendInstance,registerActionClosure)
+function createModule($backend,registerActionClosure)
 {
 		var logger=backendInstance.getLogger();
 		//var utils=backendInstance.getUtils();

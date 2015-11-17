@@ -4,14 +4,13 @@ var mod={};
 module.exports=mod;
 mod.createModule=createModule;
 mod.getName=function(){return '$job';};
-mod.$inject=['$uiActions','$config'];
+mod.$inject=['$uiActions','$config','$logger'];
 
 var _ =require('lodash');
 var path=require('path');
 
-function createModule(backendInstance,$uiActions,$config)
+function createModule($uiActions,$config,$logger)
 {
-    var logger=backendInstance.getLogger();
 		var configJobs={};
     var jobTypes={};
     var jobQueue={};
@@ -57,7 +56,7 @@ function createModule(backendInstance,$uiActions,$config)
 		}
 		function getAllJobs()
 		{
-      return Object.keys(configJobs);
+      return _.pluck(configJobs,'name');
 		}
     function registerJobType(name,create)
     {
@@ -79,7 +78,7 @@ function createModule(backendInstance,$uiActions,$config)
       }
       var job;
       try {
-        job=startJob(jobTypes[type](settings,logger));
+        job=startJob(jobTypes[type](settings,$logger));
       } catch (e) {
         job=undefined;//job start throw error- mark as error
         jobQueue[name]={getProgress:function(){return 1;},cancel:null,status:'error',returnValue:''+e};
