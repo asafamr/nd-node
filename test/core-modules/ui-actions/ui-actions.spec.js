@@ -19,7 +19,7 @@ describe('ui actions module', function(){
 			var mockBackend={};
 			var instance=uiActions.createModule(mockBackend);
 			instance.registerAction('someAction',['arg1'],function(){});
-			return expect(instance.runAction('someAction',[])).to.eventually.be.rejected;
+			return expect(instance.callAction('someAction',[])).to.eventually.be.rejected;
 		});
 		it('actions run with arguments and return promise', function(){
 			var mockBackend={};
@@ -33,7 +33,7 @@ describe('ui actions module', function(){
 				}
 			};
 			instance.registerAction('someAction',['arg1','arg2'],aAction);
-			return expect(instance.runAction('someAction',['passedValue','passedValue2']).then(
+			return expect(instance.callAction('someAction',['passedValue','passedValue2']).then(
 				function(){return run;}
 			)).to.eventually.equal('alright');
 

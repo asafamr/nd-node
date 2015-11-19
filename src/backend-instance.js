@@ -16,7 +16,9 @@ var coreModules=
 	'ui-actions',
 	'notifications',
 	'state',
-	'job'
+	'job',
+	'pages',
+	'fs'
 	/*'job-manager',
   'nd-fs',
 	'',
@@ -127,4 +129,3 @@ function getCoreModulePath(moduleName)
 {
   return path.normalize(__dirname+'/core-modules/'+moduleName+'/'+moduleName);
 }
-

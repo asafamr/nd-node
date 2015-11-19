@@ -4,11 +4,11 @@ var mod={};
 module.exports=mod;
 mod.createModule=createModule;
 mod.getName=function(){return '$config';};
-mod.$inject=['$backend','$uiActions','$state'];
+mod.$inject=['$backend','$state'];
 
 var _ =require('lodash');
 
-function createModule($backend,$uiActions,$state)
+function createModule($backend,$state)
 {
 		var installerStage='install';
 		var config={};
@@ -17,17 +17,10 @@ function createModule($backend,$uiActions,$state)
 
 		var configModule={};
 		configModule.getConfig=getConfig;
-		configModule.getPageNames=getPageNames;
-		configModule.getPage=getPage;
 		configModule.getInstallerStage=function(){return installerStage;};
-		registerUiActions();
 		return configModule;
 
-		function registerUiActions()
-		{
-			$uiActions.registerAction('getPageNames',[],getPageNames);
-			$uiActions.registerAction('getPage',['name'],getPage);
-		}
+
 		function parseStateStrings(val)
 		{
 			if(_.isString(val))
@@ -40,25 +33,7 @@ function createModule($backend,$uiActions,$state)
 		{
 			return _.cloneDeep(_.get(config[installerStage],path,parseStateStrings));
 		}
-		function getPage(name)
-		{
-			var pages=_.get(config,installerStage+'.pages');
-			if(pages===undefined)
-			{
-				throw new Error('no pages for '+installerStage);
-			}
-			return _.find(pages,{name:name});
-		}
 
-		function getPageNames()
-		{
-			var pages=_.get(config,installerStage+'.pages');
-			if(pages===undefined)
-			{
-				throw new Error('no pages for '+installerStage);
-			}
-			return _.pluck(pages,'name');
-		}
 		function getLoadingInterface()
 		{
 			return {

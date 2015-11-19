@@ -15,7 +15,7 @@ function createModule(backendInstance)
 	var uiActionsModule={};
 	uiActionsModule.registerAction=registerAction;
 	uiActionsModule.getRegisteredActions=getRegisteredActions;
-	uiActionsModule.runAction=runAction;
+	uiActionsModule.callAction=callAction;
 	var uiActions={};
 	return uiActionsModule;
 	/**
@@ -33,7 +33,7 @@ function createModule(backendInstance)
 		uiActions[name]={name:name,paramNames:paramNames,action:action};
 	}
 
-	function runAction(name,paramArray)
+	function callAction(name,paramArray)
 	{
 			return new BBPromise(function(resolve,reject)
 			{
@@ -47,11 +47,13 @@ function createModule(backendInstance)
 					}*/
 					if(!uiActions.hasOwnProperty(name))
 					{
-						reject('No UI Action named '+name);
+						reject('No Action named '+name);
+						return;
 					}
 					if(paramArray.length!==uiActions[name].paramNames.length)
 					{
 						reject('Wrong number of arguments passed to '+name);
+						return;
 					}
 					resolve(uiActions[name].action.apply(null,paramArray));
 			});

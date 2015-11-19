@@ -7,14 +7,15 @@ registering a custom module mock2
 registering a custom module mock3
 Creating an instace of mock3
 Creating an instace of $backend
-Creating an instace of $uiActions
 Creating an instace of $state
+Creating an instace of $uiActions
 Creating an instace of $logger
 Creating an instace of mock1
-Creating an instace of $notifications
 Creating an instace of $config
+Creating an instace of $notifications
 Creating an instace of mock2
 Creating an instace of $job
+Creating an instace of $pages
 finished loading modules
 [2K[0G    [32m  √[0m[90m load according to order[0m
 registering a custom module mock1
@@ -23,13 +24,14 @@ registering a custom module mock3
 Creating an instace of mock2
 Creating an instace of mock3
 Creating an instace of $backend
-Creating an instace of $uiActions
 Creating an instace of $state
+Creating an instace of $uiActions
 Creating an instace of $logger
 Creating an instace of mock1
-Creating an instace of $notifications
 Creating an instace of $config
+Creating an instace of $notifications
 Creating an instace of $job
+Creating an instace of $pages
 finished loading modules
 [2K[0G    [32m  √[0m[90m should get dependencies[0m
 registering a custom module mock1
@@ -39,18 +41,18 @@ registering a custom module mock3
 
 [0m  config module[0m
 [2K[0G  [32m  √[0m[90m name should be $config[0m
-[2K[0G  [32m  √[0m[90m should get all pages, one page by name and register action[0m
 
 [0m  job module[0m
 [0m    sfx mock[0m
 registering a custom module mock
 Creating an instace of $backend
-Creating an instace of $uiActions
 Creating an instace of $state
+Creating an instace of $uiActions
 Creating an instace of $logger
-Creating an instace of $notifications
 Creating an instace of $config
+Creating an instace of $notifications
 Creating an instace of $job
+Creating an instace of $pages
 Creating an instace of mock
 finished loading modules
 [ 'main' ]
@@ -59,6 +61,18 @@ finished loading modules
 [0m  notifications module[0m
 [2K[0G  [32m  √[0m[90m name should be $notifications[0m
 [2K[0G  [32m  √[0m[90m should register the get notificationsFromIdx[0m
+
+[0m  pages module[0m
+Creating an instace of $backend
+Creating an instace of $state
+Creating an instace of $uiActions
+Creating an instace of $logger
+Creating an instace of $config
+Creating an instace of $notifications
+Creating an instace of $job
+Creating an instace of $pages
+finished loading modules
+[2K[0G  [32m  √[0m[90m should get all pages[0m
 
 [0m  state module[0m
 [2K[0G  [32m  √[0m[90m name should be $notifications[0m
@@ -76,5 +90,5 @@ finished loading modules
 [2K[0G    [32m  √[0m[90m should be able to load a singleton[0m
 
 
-[92m [0m[32m 16 passing[0m[90m (102ms)[0m
+[92m [0m[32m 16 passing[0m[90m (109ms)[0m
 
