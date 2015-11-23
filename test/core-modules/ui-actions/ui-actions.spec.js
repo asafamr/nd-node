@@ -12,19 +12,17 @@ var uiActions= require(__dirname+'/../../../src/core-modules/ui-actions/ui-actio
 
 describe('ui actions module', function(){
 		it('name should be $uiActions', function(){
-      expect(uiActions.getName()).to.equal('$uiActions');
+      expect(uiActions.moduleName).to.equal('$uiActions');
     });
 
 		it('actions number of arguments', function(){
-			var mockBackend={};
-			var instance=uiActions.createModule(mockBackend);
+			var instance=uiActions();
 			instance.registerAction('someAction',['arg1'],function(){});
 			return expect(instance.callAction('someAction',[])).to.eventually.be.rejected;
 		});
 		it('actions run with arguments and return promise', function(){
-			var mockBackend={};
 			var run=false;
-			var instance=uiActions.createModule(mockBackend);
+			var instance=uiActions();
 			var aAction=function(anArg,anotherArg)
 			{
 				if(anArg==='passedValue' && anotherArg==='passedValue2')

@@ -13,11 +13,10 @@ var uiActions= require(__dirname+'/../../../src/core-modules/notifications/notif
 
 describe('notifications module', function(){
 		it('name should be $notifications', function(){
-      expect(uiActions.getName()).to.equal('$notifications');
+      expect(uiActions.moduleName).to.equal('$notifications');
     });
 
 		it('should register the get notificationsFromIdx', function(){
-			var mockBackend={};
 			var run=null;//TODO:change to a sinon spy
 			var uiactions={registerAction:
 				function(name,argNames,callback)
@@ -27,7 +26,7 @@ describe('notifications module', function(){
 				expect(argNames).to.deep.equal(['idx']);
 				run='all ok';
 			}};
-			var promise=BBPromise.resolve(uiActions.createModule(uiactions)).then(
+			var promise=BBPromise.resolve(uiActions(uiactions)).then(
 				function()
 				{
 					return run;

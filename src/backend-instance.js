@@ -8,6 +8,7 @@ var logger= require('./logger');
 var path= require('path');
 var _= require('lodash');
 var BBPromise= require('bluebird');
+var fs= require('fs');
 var moduleLoader= require('./module-loader');
 
 var coreModules=
@@ -18,7 +19,8 @@ var coreModules=
 	'state',
 	'job',
 	'pages',
-	'fs'
+	'fs',
+	'utils'
 	/*'job-manager',
   'nd-fs',
 	'',
@@ -32,6 +34,7 @@ function create(ndConfigPath)
 	var newBackendInstance={};
 	newBackendInstance.startLoad=startLoad;
 	newBackendInstance.registerModule=registerModule;
+	newBackendInstance.registerModulesDir=registerModulesDir;
   newBackendInstance.getConfigPath=function(){return ndConfigPath;};
 	newBackendInstance.hasFinishedLoading=function(){return finishedLoading;};
   newBackendInstance.getModule=function(name){return loadedModules[name];};
@@ -60,8 +63,8 @@ function create(ndConfigPath)
 			coreModules.forEach(function (moduleName){
 				moduleLoaders.push(moduleLoader.getLoader(getCoreModulePath(moduleName)));
 			});
-			moduleLoaders.push(moduleLoader.getLoader({instance:logger,getName:function(){return '$logger';}}));
-			moduleLoaders.push(moduleLoader.getLoader({instance:newBackendInstance,getName:function(){return '$backend';}}));
+			moduleLoaders.push(moduleLoader.getLoader({instance:logger,moduleName:'$logger'}));
+			moduleLoaders.push(moduleLoader.getLoader({instance:newBackendInstance,moduleName:'$backend'}));
 
       //var modules=getModulesAndDependencies(modulePaths);
       moduleLoaders=moduleLoader.getSortedByDepends(moduleLoaders);
@@ -86,7 +89,9 @@ function create(ndConfigPath)
 											var factoryRet=moduleLoader.factory.apply(newBackendInstance,argValues);
 											if(!factoryRet)
 											{
-												throw new Error(moduleLoader.name +' factory returned null');
+												throw new Error('xxxxx');
+												loadedModules[moduleLoader.name]={};
+												return BBPromise.resolve({});
 											}
 											return BBPromise.resolve(factoryRet).then(function(instResolved)
 											{
@@ -117,6 +122,17 @@ function create(ndConfigPath)
 			var loader= moduleLoader.getLoader(ndjsModule);
       logger.debug('registering a custom module ' +loader.name);
 			moduleLoaders.push(loader);
+	}
+	function registerModulesDir(dirPath)
+	{
+		var files=fs.readdirSync(dirPath);
+		files.forEach(function(filename)
+			{
+				if(filename.indexOf('.js')!==-1)
+				{
+					registerModule(path.join(dirPath,filename));
+				}
+			});
 	}
 
 

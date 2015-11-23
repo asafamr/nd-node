@@ -45,10 +45,9 @@ describe('moduleLoader', function(){
 
     it('should be able to load from object', function(){
       var n=0;
-      var mock=moduleLoader.getLoader({
-        createModule:function(){n++;},
-        getName:function(){return 'a';}}
-      );
+      var func=function(){n++;};
+      func.moduleName='a';
+      var mock=moduleLoader.getLoader(func);
       expect(mock.name).to.equal('a');
       expect(mock).to.have.ownProperty('factory');
       mock.factory();
@@ -60,7 +59,7 @@ describe('moduleLoader', function(){
       var n=0;
       var mock=moduleLoader.getLoader({
         instance:function(){n++;},
-        getName:function(){return 'b';}}
+        moduleName:'b'}
       );
       expect(mock.name).to.equal('b');
       expect(mock).to.have.ownProperty('factory');

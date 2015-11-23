@@ -1,10 +1,8 @@
 'use strict';
 
-var mod={};
-module.exports=mod;
-mod.createModule=createModule;
-mod.getName=function(){return '$config';};
-mod.$inject=['$backend','$state'];
+module.exports=createModule;
+createModule.moduleName='$config';
+createModule.$inject=['$backend','$state'];
 
 var _ =require('lodash');
 
@@ -20,18 +18,33 @@ function createModule($backend,$state)
 		configModule.getInstallerStage=function(){return installerStage;};
 		return configModule;
 
-
+		function cloneDeepAndParse(val)
+		{
+			if(_.isPlainObject(val))
+			{
+				return _.mapValues(val,cloneDeepAndParse);
+			}
+			else if(_.isArray(val))
+			{
+				return _.map(val,cloneDeepAndParse);
+			}
+			else if (_.isString(val)) {
+				return parseStateStrings(val);
+			}
+			return val;
+		}
 		function parseStateStrings(val)
 		{
-			if(_.isString(val))
+			var parsed=$state.parseTemplate(val);
+			if(parsed!==val)
 			{
-				return $state.parseTemplate(val);
+				return parseStateStrings(parsed);
 			}
 			return val;
 		}
 		function getConfig(path)
 		{
-			return _.cloneDeep(_.get(config[installerStage],path,parseStateStrings));
+			return cloneDeepAndParse(_.get(config[installerStage],path));
 		}
 
 		function getLoadingInterface()

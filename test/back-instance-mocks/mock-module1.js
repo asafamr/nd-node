@@ -1,9 +1,6 @@
-(function(){
 'use strict';
-
-var mod={};
-module.exports=mod;
-mod.getName=function(){return 'mock1';};
-mod.createModule='override me';
-mod.$inject=[];
-})();
+createModule.moduleName='mock1';
+createModule.$inject=[];
+module.exports=createModule;
+createModule.func=function(){};//overrriden in tests
+function createModule(){createModule.args=arguments;createModule.func();return {};}

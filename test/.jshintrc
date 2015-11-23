@@ -20,6 +20,8 @@
         "should":true,
         "expect":true,
         "beforeEach":true,
+        "before":true,
+        "after":true,
         "__dirname":true
 
 

@@ -10,19 +10,19 @@ var expect = chai.expect;
 var backendInstance= require('../../../src/backend-instance');
 
 var $pages;
-function initMock()
+function initMock(done)
 {
   var backInst=backendInstance.create(path.normalize(__dirname+'../../../mock-ndfile.js'));
-  return backInst.startLoad().then(function(){
+  backInst.startLoad().then(function(){
     $pages=backInst.getModule('$pages');
-  });
+  }).then(done);
 
 }
 describe('pages module', function(){
 
-
+    before(initMock);
 		it('should get all pages', function(){// break to several tests
-      return initMock().then(function(){
+
       expect($pages.getPages()).to.deep.equal([
         {'name':'welcome','type':'custom'},
         {'name':'eula','type':'eula'},
@@ -32,7 +32,7 @@ describe('pages module', function(){
       ]);
 
 
-		});
+
   });
 
 });

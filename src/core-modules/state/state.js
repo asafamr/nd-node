@@ -1,14 +1,12 @@
 'use strict';
 
-var mod={};
-module.exports=mod;
-mod.createModule=createModule;
-mod.getName=function(){return '$state';};
-mod.$inject=['$uiActions'];
+module.exports=createModule;
+createModule.moduleName='$state';
+createModule.$inject=['$uiActions','$logger'];
 
 var _ =require('lodash');
 
-function createModule($uiActions)
+function createModule($uiActions,$logger)
 {
   var state={};
   var stateModuleInstance={};
@@ -22,12 +20,17 @@ function createModule($uiActions)
     $uiActions.registerAction('setUserSettings',['key','value'],
     function(key,val)
     {
-      setSettings('userSettings.'+key,val);
+      setSettings('user.'+key,val);
     });
   }
   function getSettings(settingsPath,defaultValue)
   {
-    return _.get(state,settingsPath,defaultValue);
+    var got= _.get(state,settingsPath,defaultValue);
+    if(!got && !defaultValue)
+    {
+      $logger.warn('requested settings '+settingsPath +' missing and no default value supplied');
+    }
+    return got;
   }
   function setSettings(settingsPath,value)
   {
@@ -38,4 +41,3 @@ function createModule($uiActions)
     return _.template(str)(state);
   }
 }
-

@@ -1,24 +1,20 @@
 'use strict';
 var BBPromise=require('bluebird');
 var childProcess=require('child_process');
+var fs=require('fs');
 var ncp =require('ncp').ncp;
 
 var jobType={};
 module.exports=jobType;
-jobType.getName=function(){return 'sfx';};
+jobType.getName=function(){return 'extract';};
 jobType.create=create;
 
 function create(settings,logger)
 {
-  var jobPromise=BBPromise.reject();
-  var jobInstance={};
-  var totalExtracted=0;
-  var totalSizeMb=0;
-  jobInstance.cancel=cancel;
-  jobInstance.getProgress=getProgress;
-  jobInstance.getPromise=function(){return jobPromise;};
-  startPromise();
-  return jobInstance;
+  var jobPromise=startPromise();
+  jobPromise.cancel=cancel;
+
+  return jobPromise;
 
 
   function startPromise()
@@ -33,6 +29,7 @@ function create(settings,logger)
       }
 
     });
+    return jobPromise;
   }
   function cancel()
   {
@@ -42,31 +39,34 @@ function create(settings,logger)
   {
     sfxFromTo(settings.from,settings.to,resolve,reject);
   }
-  function extractMockCopy(resolve,reject)
+  function extractMockCopy(resolve)
   {
-      ncp.ncp(settings.from,settings.to,{transform:transformFunc},function(err,ok)
+    var ncpPromise=BBPromise.promisify(ncp.ncp);
+    resolve(BBPromise.each(settings.files,function(fromTo)
+  {
+      return ncpPromise(fromTo.from,fromTo.to,{transform:transformFunc});
+  },0));
+
+    function transformFunc(read, write,fileName)
+    {
+      void fileName;
+      var stats=fs.statSync(fileName.name,function(err,stats)
     {
       if(err)
       {
-        reject(err);
+        logger.debug(err);
       }
-      resolve(ok);
+      else {
+      }
+
     });
-    function transformFunc(read, write,fileName)
-    {
+
       //update progress
       read.pipe(write);
     }
 
   }
-  function getProgress()
-  {
-    if(totalSizeMb===0)
-    {
-      return 0;
-    }
-    return Math.min(Math.max(totalExtracted/totalSizeMb,0),1);
-  }
+
   function sfxFromTo(from,to,resolve,reject)
   {
 

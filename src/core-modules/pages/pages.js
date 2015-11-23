@@ -1,11 +1,9 @@
 'use strict';
 
 
-var mod={};
-module.exports=mod;
-mod.getName=function(){return '$pages';};
-mod.createModule=createModule;
-mod.$inject=['$uiActions','$config'];
+module.exports=createModule;
+createModule.moduleName='$pages';
+createModule.$inject=['$uiActions','$config'];
 
 function createModule($uiActions,$config)
 {

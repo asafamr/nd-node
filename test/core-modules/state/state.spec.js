@@ -7,19 +7,19 @@ var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 var expect = chai.expect;
 
-var uiActions= require(__dirname+'/../../../src/core-modules/state/state');
+var stateModule= require(__dirname+'/../../../src/core-modules/state/state');
 
 
 
 describe('state module', function(){
 		it('name should be $notifications', function(){
-      expect(uiActions.getName()).to.equal('$state');
+      expect(stateModule.moduleName).to.equal('$state');
     });
 
 		it('should get and set nested properties with defualt values', function(){
-			var mockBackend={};
+			var mockUiActions={registerAction:function(){}};
 
-			return BBPromise.resolve(uiActions.createModule(mockBackend)).then(
+			return BBPromise.resolve(stateModule(mockUiActions)).then(
 				function(instance)
 				{
 					expect(instance.getSettings('user.abc.def','default val')).to.equal('default val');

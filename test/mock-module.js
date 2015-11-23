@@ -1,8 +1,6 @@
 'use strict';
-var mockModule={};
-mockModule.getName=function(){return 'mock';};
-mockModule.createModule=createModule;
-mockModule.$inject=[];
-module.exports=mockModule;
+createModule.moduleName='mock';
+createModule.$inject=[];
+module.exports=createModule;
 
-function createModule(){mockModule.args=arguments;}
+function createModule(){createModule.args=arguments;return{};}

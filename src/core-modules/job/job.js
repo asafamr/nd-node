@@ -1,17 +1,14 @@
 'use strict';
 
-var mod={};
-module.exports=mod;
-mod.createModule=createModule;
-mod.getName=function(){return '$job';};
-mod.$inject=['$uiActions','$config','$logger'];
+module.exports=createModule;
+createModule.moduleName='$job';
+createModule.$inject=['$uiActions','$config','$logger','$backend'];
 
 var _ =require('lodash');
 var path=require('path');
 
-function createModule($uiActions,$config,$logger)
+function createModule($uiActions,$config,$logger,$backend)
 {
-		var configJobs={};
     var jobTypes={};
     var jobQueue={};
 
@@ -20,6 +17,7 @@ function createModule($uiActions,$config,$logger)
     jobModule.getRunningJobsProgress=getRunningJobsProgress;
     jobModule.registerJobType=registerJobType;
 		jobModule.startJob=startJob;
+		jobModule.startNamedJob=startNamedJob;
     activate();
 		return jobModule;
 
@@ -27,17 +25,17 @@ function createModule($uiActions,$config,$logger)
     {
       registerUiActions();
       loadCoreJobTypes();
-      loadJobsFromConfig();
     }
-    function loadJobsFromConfig()
+    function getJobsFromConfig()
     {
-      configJobs=$config.getConfig('jobs');
+      return $config.getConfig('jobs');
     }
     function loadCoreJobTypes()
     {
         var coreJobs=[
-          'sfx',
-          'shortcut'];
+          'extract',
+          'shortcut',
+					'multi'];
         coreJobs.forEach(function(jobName)
         {
           loadJobFromFile(path.normalize(__dirname+'/core-jobs/'+jobName));
@@ -52,11 +50,11 @@ function createModule($uiActions,$config,$logger)
 		{
 			$uiActions.registerAction('getAllJobs',[],getAllJobs);
       $uiActions.registerAction('getRunningJobsProgress',['name'],getRunningJobsProgress);
-			$uiActions.registerAction('startJob',['name'],startJob);
+			$uiActions.registerAction('startNamedJob',['name'],startNamedJob);
 		}
 		function getAllJobs()
 		{
-      return _.pluck(configJobs,'name');
+      return Object.keys(getJobsFromConfig());
 		}
     function registerJobType(name,create)
     {
@@ -66,20 +64,35 @@ function createModule($uiActions,$config,$logger)
       }
       jobTypes[name]=create;
     }
-    function startJob(name,settings)
+		function startJob(jobType,settings)
+		{
+			if(!jobTypes.hasOwnProperty(jobType))
+      {
+          throw new Error('Job type '+jobType + ' unknown');
+      }
+			var jobPromise= jobTypes[jobType](settings,$logger,$backend);
+      if(!('then' in jobPromise))
+      {
+        throw new Error('Job type '+jobType + '.create returned a non promise');
+      }
+      return jobPromise;
+		}
+    function startNamedJob(name)
 		{
       //we support two kind of return values from job type start:
       //either full object with getProgress,getPromise,cancel(optional)
       //or just a return value/throw error for instant jobs
-      var type=configJobs[name].type;
-      if(jobQueue.hasOwnProperty(name))
+			var jobInConfig=getJobsFromConfig()[name];
+      var type=jobInConfig.type;
+      if(false&& jobQueue.hasOwnProperty(name))
       {
           throw new Error('Job '+name + ' alrady started');
       }
       var job;
       try {
-        job=startJob(jobTypes[type](settings,$logger));
+        job=startJob(type,jobInConfig.settings);
       } catch (e) {
+      	$logger.error(e+e.stack);
         job=undefined;//job start throw error- mark as error
         jobQueue[name]={getProgress:function(){return 1;},cancel:null,status:'error',returnValue:''+e};
       }

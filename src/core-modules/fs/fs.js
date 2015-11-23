@@ -1,12 +1,9 @@
 'use strict';
 
-var mod={};
-module.exports=mod;
-mod.createModule=createModule;
-mod.getName=function(){return '$fs';};
-mod.$inject=['$uiActions'];
+module.exports=createModule;
+createModule.moduleName='$fs';
+createModule.$inject=['$uiActions'];
 
-var path=require('path');
 
 function createModule($uiActions)
 {

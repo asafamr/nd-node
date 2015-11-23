@@ -8,13 +8,13 @@ var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 var expect = chai.expect;
 
-var uiActions= require(__dirname+'/../../../src/core-modules/config/config');
+var moduleReq= require(__dirname+'/../../../src/core-modules/config/config');
 
 
 
 describe('config module', function(){
 		it('name should be $config', function(){
-      expect(uiActions.getName()).to.equal('$config');
+      expect(moduleReq.moduleName).to.equal('$config');
     });
 
 

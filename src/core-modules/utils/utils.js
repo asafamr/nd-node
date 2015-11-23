@@ -2,11 +2,9 @@
 
 var fs=require('fs');
 
-var mod={};
-module.exports=mod;
-mod.getName=function(){return '$utils';};
-mod.createModule=createModule;
-mod.$inject=[];
+module.exports=createModule;
+createModule.moduleName='$utils';
+createModule.$inject=[];
 
 function createModule(backendInstance)
 {

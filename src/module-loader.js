@@ -6,17 +6,33 @@ moduleLoader.getSortedByDepends=getSortedByDepends;
 module.exports=moduleLoader;
 
 var _=require('lodash');
-var fs=require('fs');
 var toposort= require('toposort');
-
+var anonCounter=0;
+function getAnonymousName()
+{
+  var newName='AnonymousModule'+anonCounter;
+  anonCounter++;
+  return newName;
+}
+function getLoaderFromFullModule(obj)
+{
+  var dependencies=[];
+  var name=obj.moduleName;
+  if(!name)
+  {
+    name = getAnonymousName();
+  }
+  if(obj.$inject)
+  {
+    dependencies=obj.$inject;
+  }
+  return {factory:obj,name:name,dependencies:dependencies};
+}
 function getLoader(ndjsModule)
 {
   //we support 3 kinds of inputs:   path to factory module(implements createModule,getName)
   //                                factory object(implements createModule,getName)
   //                                singleton instance(implements getName,instance)
-  var dependencies=[];
-  var factory=null;
-  var name='';
 
   if(_.isString(ndjsModule))//path to module
   {
@@ -24,46 +40,26 @@ function getLoader(ndjsModule)
     try {
       requiredModule=require(ndjsModule);
     } catch (e) {
-        throw new Error('Module '+ndjsModule +' could not be found');
+        throw new Error('Error while trying to load '+ndjsModule +': '+e);
     }
+    if(typeof requiredModule !== 'function')
+    {
+      throw new Error('Module '+ndjsModule +' does not return a factory function');
+    }
+    return getLoaderFromFullModule(requiredModule);
 
-    if(!requiredModule.createModule)
-    {
-      throw new Error('Module '+ndjsModule +' does not implement createModule');
-    }
-    if(!requiredModule.getName)
-    {
-      throw new Error('Module '+ndjsModule +' does not implement getModuleName');
-    }
-    if(requiredModule.$inject)
-    {
-      dependencies=requiredModule.$inject;
-    }
-    factory=requiredModule.createModule;
-    name=requiredModule.getName();
   }
-  else if(ndjsModule.createModule){
-    if(!ndjsModule.getName)
-    {
-      throw new Error('Module does not implement getModuleName');
-    }
-    if(ndjsModule.$inject)
-    {
-      dependencies=ndjsModule.$inject;
-    }
-    factory=ndjsModule.createModule;
-    name=ndjsModule.getName();
+  else if(typeof ndjsModule === 'function'){
+    return getLoaderFromFullModule(ndjsModule);
   }
-  else if(ndjsModule.getName && ndjsModule.instance)
-  {
-    name=ndjsModule.getName();
-    factory=function(){return ndjsModule.instance;};
+  else if(ndjsModule.moduleName && ndjsModule.instance)
+  {//if this is a singleton instance it needs to have a name to be injected
+    var factory=function(){return ndjsModule.instance;};
+    return {factory:factory,name:ndjsModule.moduleName,dependencies:[]};
   }
   else {
     throw new Error('Module format invalid');
   }
-  return {factory:factory,name:name,dependencies:dependencies};
-
 }
 
 /**

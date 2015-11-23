@@ -3,15 +3,12 @@
 var _=require('lodash');
 var BBPromise=require('bluebird');
 
-var mod={};
-module.exports=mod;
-mod.getName=function(){return '$uiActions';};
-mod.createModule=createModule;
-mod.$inject=[];
+module.exports=createModule;
+createModule.moduleName='$uiActions';
+createModule.$inject=[];
 
-function createModule(backendInstance)
+function createModule()
 {
-	void backendInstance;
 	var uiActionsModule={};
 	uiActionsModule.registerAction=registerAction;
 	uiActionsModule.getRegisteredActions=getRegisteredActions;
@@ -55,7 +52,18 @@ function createModule(backendInstance)
 						reject('Wrong number of arguments passed to '+name);
 						return;
 					}
-					resolve(uiActions[name].action.apply(null,paramArray));
+					var ret;
+					try{
+						ret=uiActions[name].action.apply(null,paramArray);
+					}
+					catch(e)
+					{
+						reject(e);
+						return;
+					}
+
+					if(!ret){resolve('ok');}
+					resolve(ret);
 			});
 	}
 }

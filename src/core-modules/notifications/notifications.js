@@ -3,11 +3,9 @@
 //var _=require('lodash');
 var BBPromise=require('bluebird');
 
-var mod={};
-module.exports=mod;
-mod.getName=function(){return '$notifications';};
-mod.createModule=createModule;
-mod.$inject=['$uiActions'];
+module.exports=createModule;
+createModule.moduleName='$notifications';
+createModule.$inject=['$uiActions'];
 
 function createModule($uiActions)
 {
