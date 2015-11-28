@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/asafamr/nd-node.png?label=ready&title=Ready)](https://waffle.io/asafamr/nd-node)
 # ND-Node
 
 NDJS node back end
