@@ -88,7 +88,8 @@ beforeEach(initMock);
           resolve('ok');
         });
       };
-        $job.registerJobType('custom',customJobCreate);
+      customJobCreate.jobType='custom';
+        $job.registerJobType(customJobCreate);
         $job.startJob('multi',{'subJobs':[
           {'type':'custom','settings':{'str':'a'}},
           {'type':'custom','settings':{'str':'b'}},

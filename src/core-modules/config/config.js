@@ -5,6 +5,8 @@ createModule.moduleName='$config';
 createModule.$inject=['$backend','$state'];
 
 var _ =require('lodash');
+var path =require('path');
+
 
 function createModule($backend,$state)
 {
@@ -15,6 +17,7 @@ function createModule($backend,$state)
 
 		var configModule={};
 		configModule.getConfig=getConfig;
+		configModule.getOutgoingDir=getOutgoingDir;
 		configModule.getInstallerStage=function(){return installerStage;};
 		return configModule;
 
@@ -46,6 +49,10 @@ function createModule($backend,$state)
 		{
 			return cloneDeepAndParse(_.get(config[installerStage],path));
 		}
+		function getOutgoingDir()
+		{
+			return path.resolve(config.options.outgoing);
+		}
 
 		function getLoadingInterface()
 		{
@@ -54,3 +61,4 @@ function createModule($backend,$state)
 			};
 		}
 }
+

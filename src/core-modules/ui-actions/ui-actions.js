@@ -52,18 +52,14 @@ function createModule()
 						reject('Wrong number of arguments passed to '+name);
 						return;
 					}
-					var ret;
-					try{
-						ret=uiActions[name].action.apply(null,paramArray);
-					}
-					catch(e)
-					{
-						reject(e);
-						return;
-					}
-
-					if(!ret){resolve('ok');}
-					resolve(ret);
-			});
+					resolve(uiActions[name].action.apply(null,paramArray));
+			}).then(function(result)
+		{
+			if(!result)
+			{
+				return {};//so we always return a valid json
+			}
+			return result;
+		});
 	}
 }

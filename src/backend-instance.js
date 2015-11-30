@@ -85,11 +85,10 @@ function create(ndConfigPath)
 									resolve(BBPromise.all(args).then(//all dependencies have ben created - create this module now
 			              function(argValues)
 			              {
-											logger.debug('Creating an instace of '+moduleLoader.name);
+											logger.debug('Creating an instance of '+moduleLoader.name);
 											var factoryRet=moduleLoader.factory.apply(newBackendInstance,argValues);
 											if(!factoryRet)
 											{
-												throw new Error('xxxxx');
 												loadedModules[moduleLoader.name]={};
 												return BBPromise.resolve({});
 											}
@@ -130,7 +129,7 @@ function create(ndConfigPath)
 			{
 				if(filename.indexOf('.js')!==-1)
 				{
-					registerModule(path.join(dirPath,filename));
+					registerModule(path.resolve(dirPath,filename));
 				}
 			});
 	}

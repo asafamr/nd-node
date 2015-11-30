@@ -1,1 +1,1 @@
-node-debug C:\Users\asaf\AppData\Roaming\npm\node_modules\grunt-cli\bin\grunt mochaTest
+node-debug C:\Users\asaf\AppData\Roaming\npm\node_modules\grunt-cli\bin\grunt mochaTest --grep utils

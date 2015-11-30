@@ -8,7 +8,7 @@ var _ =require('lodash');
 
 function createModule($uiActions,$logger)
 {
-  var state={};
+  var state={user:{}};
   var stateModuleInstance={};
   stateModuleInstance.getSettings=getSettings;
   stateModuleInstance.setSettings=setSettings;
@@ -41,3 +41,4 @@ function createModule($uiActions,$logger)
     return _.template(str)(state);
   }
 }
+

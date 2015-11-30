@@ -1,19 +1,17 @@
 'use strict';
 var BBPromise=require('bluebird');
 
-var jobType={};
-module.exports=jobType;
-jobType.getName=function(){return 'multi';};
-jobType.create=create;
+module.exports=create;
+create.jobType='multi';
 
 function create(settings,logger,$backend)
 {
   var jobPromise=getPromise();
-  jobPromise.cancel=cancel;
+  jobPromise.shouldCancel=shouldCancel;
   var currentJobMeta=settings.subJobs[0];
   var currentJobPromise=null;
   var canceled=false;
-
+  jobPromise.getProgress=getProgress;
 
   return jobPromise;
 
@@ -30,41 +28,41 @@ function create(settings,logger,$backend)
         return currentJobPromise;
     });
   }
-  function cancel()
+  function shouldCancel()
   {
     canceled=true;
-    if(currentJobPromise && currentJobPromise.cancel)
+    if(currentJobPromise && currentJobPromise.shouldCancel)
     {
-      currentJobPromise.cancel();
+      currentJobPromise.shouldCancel();
     }
   }
 
-  function getEstimatedTime(job)
-  {
-    void job;
-    return 1;
-  }
+
 
   function getProgress()
   {
-    var totalTime=0;
-    var doneTime=0;
-    var jobsDone=true;
-    settings.subJobs.forEach(function(subJob)
-  {
-    var estimated=getEstimatedTime(subJob);
-    totalTime+=estimated;
-    if(subJob===currentJobMeta)
-    {
-      var progress= currentJobInstance.hasOwnProperty(getProgress) && currentJobInstance.getProgress() || 0;
-      doneTime+=progress*estimated;
-      jobsDone=false;
-    }
-    else if(jobsDone){
-      doneTime+=estimated;
-    }
-    return Math.min(Math.max( doneTime/totalTime,0),1);
+    var totalDone=0;
 
-  });
+    var jobsDone=true;
+    var eachProgress=1.0/settings.subJobs.length;
+    settings.subJobs.forEach(function(subJob)
+    {
+      if(!currentJobPromise)
+      {
+        return;
+      }
+      if(subJob===currentJobMeta)
+      {
+        var progress= currentJobPromise.hasOwnProperty('getProgress') && currentJobPromise.getProgress() || 0;
+        totalDone+=progress*eachProgress;
+        jobsDone=false;
+      }
+      else if(jobsDone){
+        totalDone+=eachProgress;
+      }
+
+
+    });
+     return totalDone;
   }
 }
