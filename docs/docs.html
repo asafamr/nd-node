@@ -1,0 +1,275 @@
+<div class="dox-modules">
+    <div class="dox-module">
+        <div class="dox-name">config</div>
+        <div class="dox-description">gets configurations from ndjs file according to the current installer
+            stage. parses templates through the state module</div>
+        <div class="dox-methods">
+            <div class="dox-method">
+                <div class="dox-name">getInstallerStage</div>
+                <div class="dox-return">current installer stage (&#39;install&#39;, &#39;uninstall&#39; etc...)</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">getConfig</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">path</div>
+                        <div class="dox-description">{String} property path</div>
+                    </div>
+                </div>
+                <div class="dox-return">parsed value of the property if found</div>
+                <div class="dox-example">getConfig(&#39;pages[2]&#39;) will return the 3rd page in the current
+                    install stage</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">getOutgoingDir</div>
+                <div class="dox-return">outgoing dir (should not be used on production)</div>
+            </div>
+        </div>
+    </div>
+    <div class="dox-module">
+        <div class="dox-name">fs</div>
+        <div class="dox-description">file system operations</div>
+        <div class="dox-methods">
+            <div class="dox-method">
+                <div class="dox-name">getWorkingDir</div>
+                <div class="dox-return">current working dir</div>
+            </div>
+        </div>
+    </div>
+    <div class="dox-module">
+        <div class="dox-name">job</div>
+        <div class="dox-description">job queue operations</div>
+        <div class="dox-methods">
+            <div class="dox-method">
+                <div class="dox-name">getAllJobs</div>
+                <div class="dox-description">registered as UI action</div>
+                <div class="dox-return">return all jobs names from the current install stage in ndfile</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">getRegisteredJobTypes</div>
+                <div class="dox-return">all registered job types and creation callbacks</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">getAllJobs</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">path</div>
+                        <div class="dox-description">{String} property path</div>
+                    </div>
+                </div>
+                <div class="dox-return">parsed value of the property if found</div>
+                <div class="dox-example">getConfig(&#39;pages[2]&#39;) will return the 3rd page in the current
+                    install stage</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">retryJob</div>
+                <div class="dox-description">registered UI action - retry a job marked as error</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">idx</div>
+                        <div class="dox-description">{Number} index of retry job in retry queue</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">ignoreRetryJob</div>
+                <div class="dox-description">registered UI action - ignore a job marked as error</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">idx</div>
+                        <div class="dox-description">{Number} index of retry job in retry queue</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">abortRetryJob</div>
+                <div class="dox-description">registered UI action - abort a job marked as error</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">idx</div>
+                        <div class="dox-description">{Number} index of retry job in retry queue</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">startNamedJob</div>
+                <div class="dox-description">registered UI action</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">name</div>
+                        <div class="dox-description">{String} name of job in ndfile.js</div>
+                    </div>
+                    <div class="dox-param">
+                        <div class="dox-name">force</div>
+                        <div class="dox-description">{Boolean} start even if the job was started</div>
+                    </div>
+                </div>
+                <div class="dox-return">parsed value of the property if found</div>
+                <div class="dox-example">startNamedJob(main&#39;) will start job &#39;main&#39; of the current
+                    install stage</div>
+            </div>
+        </div>
+        <div class="dox-corejobs">
+            <div class="dox-corejob">
+                <div class="dox-name">extract</div>
+                <div class="dox-description">extract files compressed into the installer file (mocks by copy during
+                    debug) thorw retry error when insufficient premmissions</div>
+                <div class="dox-example">settings example {&#39;type&#39;:&#39;extract&#39;,&#39;settings&#39;:{&#39;files&#39;:[
+                    {&#39;from&#39;:&#39;tomcat&#39;,&#39;to&#39;:&#39;&lt;%=user.config.installDir%&gt;&#39;,&#39;size&#39;:109},
+                    {&#39;from&#39;:&#39;jre&#39;,&#39;to&#39;:&#39;&lt;%=user.config.installDir%&gt;/jre&#39;,&#39;size&#39;:93},
+                    {&#39;from&#39;:&#39;webapp&#39;,&#39;to&#39;:&#39;&lt;%=user.config.installDir%&gt;/webapps/ROOT&#39;,&#39;size&#39;:0}]}}</div>
+            </div>
+            <div class="dox-corejob">
+                <div class="dox-name">multi</div>
+                <div class="dox-description">run sub jobs one after the other</div>
+            </div>
+        </div>
+    </div>
+    <div class="dox-module">
+        <div class="dox-name">notifications</div>
+        <div class="dox-description">push notifications to UI</div>
+        <div class="dox-methods">
+            <div class="dox-method">
+                <div class="dox-name">getNotificationsFromIdx</div>
+                <div class="dox-description">registered UI action</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">idx</div>
+                        <div class="dox-description">{Number}</div>
+                    </div>
+                </div>
+                <div class="dox-return">get all notfications starting from this idx</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">pushNotification</div>
+                <div class="dox-description">push notfications to UI</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">name</div>
+                        <div class="dox-description">{String} name of event</div>
+                    </div>
+                    <div class="dox-param">
+                        <div class="dox-name">value</div>
+                        <div class="dox-description">{Object} event data</div>
+                    </div>
+                </div>
+                <div class="dox-example">pushNotification(&#39;downloadComplete&#39;,{package:abc.zip})</div>
+            </div>
+        </div>
+    </div>
+    <div class="dox-module">
+        <div class="dox-name">pages</div>
+        <div class="dox-description">pages handling</div>
+        <div class="dox-methods">
+            <div class="dox-method">
+                <div class="dox-name">getPages</div>
+                <div class="dox-return">all pages an their current data for current installation stage</div>
+            </div>
+        </div>
+    </div>
+    <div class="dox-module">
+        <div class="dox-name">state</div>
+        <div class="dox-description">installer stage - holds settings set from the UI</div>
+        <div class="dox-methods">
+            <div class="dox-method">
+                <div class="dox-name">getSettings</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">settingsPath</div>
+                        <div class="dox-description">{String} property path of the settings</div>
+                    </div>
+                    <div class="dox-param">
+                        <div class="dox-name">defaultValue</div>
+                        <div class="dox-description">{Object} defualt value to be returned of property not found</div>
+                    </div>
+                </div>
+                <div class="dox-return">current value of .settingsPath or defaultValue if not found</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">setSettings</div>
+                <div class="dox-description">setUserSettings ui actions calls this function with .user prefix. this
+                    functions set current state</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">settingsPath</div>
+                        <div class="dox-description">{String} name of event</div>
+                    </div>
+                    <div class="dox-param">
+                        <div class="dox-name">value</div>
+                        <div class="dox-description">{Object}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">parseTemplate</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">str</div>
+                        <div class="dox-description">{String} name of event</div>
+                    </div>
+                </div>
+                <div class="dox-return">lodash template parsed value of str according to current state</div>
+            </div>
+        </div>
+    </div>
+    <div class="dox-module">
+        <div class="dox-name">state</div>
+        <div class="dox-description">installer stage - holds settings set from the UI</div>
+        <div class="dox-methods">
+            <div class="dox-method">
+                <div class="dox-name">getRegisteredActions</div>
+                <div class="dox-description">get currently registered UI actions</div>
+                <div class="dox-return">mapping action-name -&gt; array of param-names</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">registerAction</div>
+                <div class="dox-description">register a new UI action</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">name</div>
+                        <div class="dox-description">{String} name of event</div>
+                    </div>
+                    <div class="dox-param">
+                        <div class="dox-name">paramNames</div>
+                        <div class="dox-description">{Array} array of paramerter names</div>
+                    </div>
+                    <div class="dox-param">
+                        <div class="dox-name">action</div>
+                        <div class="dox-description">{Function} callback of action( could be syncronous or retrun a pormise)</div>
+                    </div>
+                </div>
+                <div class="dox-example">rregisterAction(&#39;getNotificationsFromIdx&#39;,[&#39;idx&#39;],getNotificationsFromIdx)</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">pushNotification</div>
+                <div class="dox-description">push notfications to UI</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">name</div>
+                        <div class="dox-description">{String} name of event</div>
+                    </div>
+                    <div class="dox-param">
+                        <div class="dox-name">value</div>
+                        <div class="dox-description">{Object} sevent data</div>
+                    </div>
+                </div>
+                <div class="dox-example">pushNotification(&#39;downloadComplete&#39;,{package:abc.zip})</div>
+            </div>
+            <div class="dox-method">
+                <div class="dox-name">getSortedByDepends</div>
+                <div class="dox-params">
+                    <div class="dox-param">
+                        <div class="dox-name">moduleLoaders</div>
+                        <div class="dox-description">array of moduleLoader s</div>
+                    </div>
+                </div>
+                <div class="dox-return">array of module loaders topologically sorted by dependencies(dependencies
+                    comes before dependents)</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dox-services"></div>
+<div class="dox-directives"></div>
+
+</div>

@@ -23,8 +23,12 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "chai-as-promised": "^5.1.0",
+    "dox": "^0.8.0",
     "grunt": "^0.4.5",
     "grunt-mocha-test": "^0.12.7",
+    "html": "0.0.10",
+    "lodash": "^3.10.1",
+    "lodash.template": "^3.6.2",
     "mocha": "^2.3.3",
     "ncp": "^2.0.0"
   },

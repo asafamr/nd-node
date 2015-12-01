@@ -1,3 +1,11 @@
+/**
+@name extract corejob
+@description extract files compressed into the installer file (mocks by copy during debug) thorw retry error when insufficient premmissions
+@example
+     settings example 	{'type':'extract','settings':{'files':[ {'from':'tomcat','to':'<%=user.config.installDir%>','size':109},
+    {'from':'jre','to':'<%=user.config.installDir%>/jre','size':93},
+    {'from':'webapp','to':'<%=user.config.installDir%>/webapps/ROOT','size':0}]}}
+**/
 'use strict';
 var BBPromise=require('bluebird');
 var childProcess=require('child_process');

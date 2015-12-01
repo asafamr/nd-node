@@ -1,3 +1,8 @@
+/**
+@name multi corejob
+@description run sub jobs one after the other
+
+**/
 'use strict';
 var BBPromise=require('bluebird');
 

@@ -1,3 +1,7 @@
+/**
+@name pages module
+@description pages handling
+**/
 'use strict';
 
 
@@ -18,7 +22,10 @@ function createModule($uiActions,$config)
 	}
 
 
-
+  /**
+	* @name getPages
+	* @return all pages an their current data for current installation stage
+	**/
   function getPages()
   {
     var pages=$config.getConfig('pages');

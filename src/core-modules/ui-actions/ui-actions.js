@@ -1,3 +1,7 @@
+/**
+@name state module
+@description installer stage - holds settings set from the UI
+**/
 'use strict';
 
 var _=require('lodash');
@@ -15,21 +19,36 @@ function createModule()
 	uiActionsModule.callAction=callAction;
 	var uiActions={};
 	return uiActionsModule;
+
 	/**
-	@return mapping actionname -> [paramsName,...]
+	* @name getRegisteredActions
+	* @description get currently registered UI actions
+	* @return mapping action-name -> array of param-names
 	**/
 	function getRegisteredActions()
 	{
 			return _.cloneDeep(_.mapValues(uiActions,function(allData){return allData.paramNames;}));
 	}
 	/**
-	register a new UI action
+	* @name registerAction
+	* @description register a new UI action
+	* @param name {String} name of event
+	* @param paramNames {Array} array of paramerter names
+	* @param action {Function} callback of action( could be syncronous or retrun a pormise)
+	* @example rregisterAction('getNotificationsFromIdx',['idx'],getNotificationsFromIdx)
 	**/
 	function registerAction(name,paramNames,action)
 	{
 		uiActions[name]={name:name,paramNames:paramNames,action:action};
 	}
 
+	/**
+	* @name pushNotification
+	* @description push notfications to UI
+	* @param name {String} name of event
+	* @param value {Object} sevent data
+	* @example pushNotification('downloadComplete',{package:abc.zip})
+	**/
 	function callAction(name,paramArray)
 	{
 			return new BBPromise(function(resolve,reject)

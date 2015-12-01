@@ -1,3 +1,7 @@
+/**
+@name fs module
+@description file system operations
+**/
 'use strict';
 
 module.exports=createModule;
@@ -22,6 +26,10 @@ function createModule($uiActions)
 		{
 			$uiActions.registerAction('getWorkingDir',[],getWorkingDir);
 		}
+		/**
+		* @name getWorkingDir
+		* @return current working dir 
+		**/
 		function getWorkingDir()
 		{
       return process.cwd();

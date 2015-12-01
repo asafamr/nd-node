@@ -1,3 +1,7 @@
+/**
+@name job module
+@description job queue operations
+**/
 'use strict';
 
 module.exports=createModule;
@@ -20,6 +24,10 @@ function createModule($uiActions,$config,$logger,$backend,$notifications)
   jobModule.getRegisteredJobTypes=getRegisteredJobTypes;
   jobModule.startJob=startJob;
   jobModule.startNamedJob=startNamedJob;
+  jobModule.retryJob=retryJob;
+  jobModule.ignoreRetryJob=ignoreRetryJob;
+  jobModule.abortRetryJob=abortRetryJob;
+
   activate();
   return jobModule;
 
@@ -56,14 +64,29 @@ function createModule($uiActions,$config,$logger,$backend,$notifications)
       $uiActions.registerAction('ignoreRetryJob',['idx'],ignoreRetryJob);
       $uiActions.registerAction('abortRetryJob',['idx'],abortRetryJob);
     }
+    /**
+		* @name getAllJobs
+    * @description registered as UI action
+		* @return return all jobs names from the current install stage in ndfile
+		**/
     function getAllJobs()
     {
       return Object.keys(getJobsFromConfig());
     }
+    /**
+		* @name getRegisteredJobTypes
+		* @return all registered job types and creation callbacks
+		**/
     function getRegisteredJobTypes()
     {
       return jobTypes;
     }
+    /**
+		* @name getAllJobs
+		* @param path {String} property path
+		* @return parsed value of the property if found
+		* @example getConfig('pages[2]') will return the 3rd page in the current install stage
+		**/
     function registerJobType(factory,setName)
     {
       var jobTypeName=setName;
@@ -81,18 +104,41 @@ function createModule($uiActions,$config,$logger,$backend,$notifications)
       }
       jobTypes[jobTypeName]=factory;
     }
+    /**
+		* @name retryJob
+    * @description registered UI action - retry a job marked as error
+    * @param idx {Number} index of retry job in retry queue
+		**/
     function retryJob(idx)
     {
       failedJobs[idx].pendingPromiseResolve( startJob(failedJobs[idx].jobType,failedJobs[idx].settings));
     }
+    /**
+		* @name ignoreRetryJob
+    * @description registered UI action - ignore a job marked as error
+    * @param idx {Number} index of retry job in retry queue
+		**/
     function ignoreRetryJob(idx)
     {
       failedJobs[idx].pendingPromiseResolve();
     }
+    /**
+		* @name abortRetryJob
+    * @description registered UI action - abort a job marked as error
+    * @param idx {Number} index of retry job in retry queue
+		**/
     function abortRetryJob(idx)
     {
       failedJobs[idx].pendingPromiseResolve(BBPromise.reject('aborted'));
     }
+    /**
+		* @name startJob
+    * @param jobType {String} type of job to strart
+		* @param settings {Object} settings of job instance
+		* @return promise of the new job or throws error
+		* @example startJob('extract',{'files':[{'from':'a','to':'b','size':109}]}) will start extracting from a to b
+		**/
+    //TODO: alwyas return a promise? - failing if error
     function startJob(jobType,settings)
     {
       if(!jobTypes.hasOwnProperty(jobType))
@@ -126,6 +172,14 @@ function createModule($uiActions,$config,$logger,$backend,$notifications)
       if(jobPromise.shouldCancel){jobPromiseErrorHandled.shouldCancel=jobPromise.shouldCancel;}
       return jobPromiseErrorHandled;
     }
+    /**
+		* @name startNamedJob
+    * @description registered UI action
+    * @param name {String} name of job in ndfile.js
+		* @param force {Boolean} start even if the job was started
+		* @return parsed value of the property if found
+		* @example startNamedJob(main') will start job 'main' of the current install stage
+		**/
     function startNamedJob(name,force)
     {
       if(typeof force === 'undefined'){force=false;}
