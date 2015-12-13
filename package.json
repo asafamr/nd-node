@@ -8,7 +8,7 @@
   "main": "nd-node.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/c9/architect.git"
+    "url": "http://github.com/asafamr/nd-node.git"
   },
   "dependencies": {
     "bluebird": "^3.0.5",
@@ -34,5 +34,5 @@
   },
   "optionalDependencies": {},
   "license": "AGPL-1.0",
-  "version": "0.2.0"
+  "version": "0.2.1"
 }
