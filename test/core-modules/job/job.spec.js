@@ -14,26 +14,32 @@ var backendInstance= require('../../../src/backend-instance');
 
 
 var $job;
+var $notifications;
+var tempPath=path.normalize(__dirname+'../../../../.tmp');
 function initMock(done)
 {
-  var backInst=backendInstance.create(path.normalize(__dirname+'../../../mock-ndfile.js'));
+  var backInst=backendInstance.create(path.normalize(__dirname+'/copymock-ndfile.js'));
   backInst.startLoad().then(function(){
     $job=backInst.getModule('$job');
+    $notifications=backInst.getModule('$notifications');
+    backInst.getModule('$state').setSettings('user.source',tempPath+'/source');
+    backInst.getModule('$state').setSettings('user.target',tempPath+'/target');
     done();
   });
 
 }
-var tempPath=path.normalize(__dirname+'../../../../.tmp');
+
 function deleteTempDirs(done)
 {
-  BBPromise.promisify(fs.emptyDir)(tempPath).then(done);
+  console.log('starting deleteTempDirs');
+   BBPromise.promisify(fs.emptyDir)(tempPath)
+   .then(function(){console.log('finished deleteTempDirs');}).then(done);
 }
 //create a source dir and target dir with some files in the source so we could run
 //the mock self extract job on in(it should copy them to the target)
 function createTempDirsWithSources(done)
 {
-
-
+  console.log('starting createTempDirsWithSources');
   BBPromise.promisify(fs.ensureDir)(tempPath).then(
     function()
     {
@@ -69,7 +75,8 @@ function createTempDirsWithSources(done)
     {
         return BBPromise.promisify(fs.writeFile)(path.join(tempPath,'source','b','file1.txt'),'file b1');
     }
-  ).then(done);
+  )
+  .then(function(){console.log('finished createTempDirsWithSources');}).then(done);
 
 }
 describe('job module', function(){
@@ -79,6 +86,7 @@ beforeEach(initMock);
 
       it('should be able to manually run', function(){
         var testStr='';
+        var emptyFunc=function(){};
         var customJobCreate=function(settings)
         {
           return new BBPromise(function(resolve)
@@ -94,7 +102,7 @@ beforeEach(initMock);
           {'type':'custom','settings':{'str':'a'}},
           {'type':'custom','settings':{'str':'b'}},
           {'type':'custom','settings':{'str':'c'}}
-      ]}).then(function()
+      ]},emptyFunc,emptyFunc,emptyFunc).then(function()
     {
       expect(testStr).to.equal('abc');
     }).error(function(){expect.fail('multi job did not run correctly');});
@@ -103,17 +111,18 @@ beforeEach(initMock);
 
 
     });
+
     before(deleteTempDirs);
     before(createTempDirsWithSources);
-    after(deleteTempDirs);
     describe('sfx job',function()
     {
-      it('on debug-mock should copy instead', function(){
 
-        return $job.startJob('extract',{'files':[
+      it('on debug-mock should copy instead', function(){
+        var emptyFunc=function(){};
+        return $job.startJob('sfx',{'files':[
           {'from':path.join(tempPath,'source','a'),'to':path.join(tempPath,'target','target-a')},
           {'from':path.join(tempPath,'source','b'),'to':path.join(tempPath,'target','target-b')}
-        ]}).then(function()
+        ]},emptyFunc,emptyFunc,emptyFunc).then(function()
         {
           return BBPromise.promisify(fs.readFile)(path.join(tempPath,'target','target-a','file2.txt'),'utf8');
         }).then(function(fileA2)
@@ -126,11 +135,168 @@ beforeEach(initMock);
         {
           expect(fileA2).to.equal('file b1');
         });
-
-
       });
     });
 
+
+    before(deleteTempDirs);
+    before(createTempDirsWithSources);
+    describe('job pending and retrying',function()
+    {
+      it('should stop copy and wait for answer when no permission', function(){
+
+        var hasStopped=false;
+        var hasRetriedFailed=false;
+        var hasRetried2=false;
+
+        var pendingId;
+        var lockFilePath=path.join(tempPath,'target','target-a','file2.txt');
+        fs.ensureFileSync(lockFilePath);
+        var openedFile = fs.openSync(lockFilePath,'w');
+
+        return new BBPromise(function (resolve)
+        {
+            var processNotif=function(notif)
+            {
+              if(notif.name==='job_pending')
+              {
+                pendingId=notif.value.pendingId;
+                if(hasRetriedFailed)
+                {
+                  hasRetried2=true;
+                }
+                else if(hasStopped)
+                {
+                  hasRetriedFailed=true;
+                  fs.closeSync(openedFile);
+                  $job.releasePendingJob(pendingId,'retry');
+                }
+                else
+                {
+                  hasStopped=true;
+                  $job.releasePendingJob(pendingId,'retry');
+                }
+              }
+              else if(notif.name==='job_status')
+              {
+                if(notif.value.progress===1 && hasRetriedFailed && hasStopped)
+                {
+                  expect(hasRetriedFailed && hasStopped && !hasRetried2).to.equal(true);
+                  resolve('ok');
+                }
+              }
+            };
+            $notifications.listenToNotifications(processNotif);
+            $job.startNamedJob('main');
+        });
+      });});
+
+
+        before(deleteTempDirs);
+        before(createTempDirsWithSources);
+        describe('job pending and retrying',function()
+        {
+          it('should stop copy and wait for answer when no permission', function(){
+
+            var hasStopped=false;
+            var hasRetriedFailed=false;
+            var hasRetried2=false;
+
+            var pendingId;
+            var lockFilePath=path.join(tempPath,'target','target-a','file2.txt');
+            fs.ensureFileSync(lockFilePath);
+            var openedFile = fs.openSync(lockFilePath,'w');
+
+            return new BBPromise(function (resolve)
+            {
+                var processNotif=function(notif)
+                {
+                  if(notif.name==='job_pending')
+                  {
+                    pendingId=notif.value.pendingId;
+                    if(hasRetriedFailed)
+                    {
+                      hasRetried2=true;
+                    }
+                    else if(hasStopped)
+                    {
+                      hasRetriedFailed=true;
+                      $job.releasePendingJob(pendingId,'ignore');
+                    }
+                    else
+                    {
+                      hasStopped=true;
+                      $job.releasePendingJob(pendingId,'retry');
+                    }
+                  }
+                  else if(notif.name==='job_status')
+                  {
+                    if(notif.value.progress===1 && hasRetriedFailed && hasStopped)
+                    {
+                      expect(hasRetriedFailed && hasStopped && !hasRetried2).to.equal(true);
+                      resolve('ok');
+                      fs.closeSync(openedFile);
+                    }
+                  }
+                };
+                $notifications.listenToNotifications(processNotif);
+                $job.startNamedJob('main');
+            });
+      });
+    });
+
+    before(deleteTempDirs);
+    before(createTempDirsWithSources);
+    describe('job pending and aborting',function()
+    {
+      it('should stop copy and wait for answer when no permission', function(){
+
+        var hasStopped=false;
+        var hasRetriedFailed=false;
+        var hasRetried2=false;
+
+        var pendingId;
+        var lockFilePath=path.join(tempPath,'target','target-a','file2.txt');
+        fs.ensureFileSync(lockFilePath);
+        var openedFile = fs.openSync(lockFilePath,'w');
+
+        return new BBPromise(function (resolve)
+        {
+            var processNotif=function(notif)
+            {
+              if(notif.name==='job_pending')
+              {
+                pendingId=notif.value.pendingId;
+                if(hasRetriedFailed)
+                {
+                  hasRetried2=true;
+                }
+                else if(hasStopped)
+                {
+                  hasRetriedFailed=true;
+                  $job.releasePendingJob(pendingId,'abort');
+                }
+                else
+                {
+                  hasStopped=true;
+                  $job.releasePendingJob(pendingId,'retry');
+                }
+              }
+              else if(notif.name==='job_aborted')
+              {
+                if(hasRetriedFailed && hasStopped)
+                {
+                  expect(hasRetriedFailed && hasStopped && !hasRetried2).to.equal(true);
+                  resolve('ok');
+                  fs.closeSync(openedFile);
+                }
+              }
+            };
+            $notifications.listenToNotifications(processNotif);
+            $job.startNamedJob('main');
+        });
+  });
+});
 
 
 

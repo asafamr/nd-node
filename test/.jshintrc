@@ -22,6 +22,7 @@
         "beforeEach":true,
         "before":true,
         "after":true,
+        "JSON":true,
         "__dirname":true
 
 

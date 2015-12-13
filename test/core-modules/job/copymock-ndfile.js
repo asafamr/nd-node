@@ -1,0 +1,31 @@
+module.exports=function(ndjs)
+{
+  'use strict';
+  ndjs.initConfig(
+{
+'options':
+{
+  'frontend':'front',
+  'backend':'back',
+  'outgoing':'outgoing'
+
+},
+'install':
+{
+  'pages':
+  [
+    {'name':'welcome','type':'custom'}
+  ],
+  'jobs':
+  {
+    main:{'type':'multi','settings':{'subJobs':[
+      {'type':'copy',
+       'settings':{'files':[
+         {'from':'<%=user.source%>/a','to':'<%=user.target%>/target-a'},
+         {'from':'<%=user.source%>/b','to':'<%=user.target%>/target-b'}
+       ]}}
+    ]}}
+  }
+}
+});
+};

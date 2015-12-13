@@ -21,10 +21,25 @@ function createModule($uiActions,$logger)
   return stateModuleInstance;
   function registerUiActions()
   {
-    $uiActions.registerAction('setUserSettings',['key','value'],
+    $uiActions.registerAction('state_setUserSettings',['key','value'],
     function(key,val)
     {
       setSettings('user.'+key,val);
+    });
+
+    $uiActions.registerAction('state_getUserSettings',['key'],
+    function(key)
+    {
+	 	var missingToken={};
+      	var got= getSettings('user.'+key,missingToken);
+      	if(got===missingToken)
+      	{
+      		return {status:'not_found',value:{}};
+      	}
+      	else
+      	{
+     		return {status:'found',value:got};
+      	}
     });
   }
   /**
@@ -62,3 +77,4 @@ function createModule($uiActions,$logger)
     return _.template(str)(state);
   }
 }
+

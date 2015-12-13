@@ -1,6 +1,6 @@
 <somexml>
   <nested>
-    <change-my-prop prop="rand6420"/>
+    <change-my-prop prop="rand6384"/>
   </nested>
-  <change-my-inner-text>rand8437</change-my-inner-text>
+  <change-my-inner-text>rand6832</change-my-inner-text>
 </somexml>

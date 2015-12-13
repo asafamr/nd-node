@@ -41,13 +41,17 @@ function create(ndConfigPath)
 
 
 	//private params
-
 	var moduleLoaders=[];
 	var startedLoading=false;
 	var finishedLoading=false;
 
+	activate();
   return newBackendInstance;
 
+	function activate()
+	{
+		registerModulesDir(__dirname+'/core-modules/job/core-jobs');
+	}
   /***
   startLoad - sort modules according to dependencies, loads them and wait for their actions registration
   ***/

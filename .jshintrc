@@ -13,7 +13,7 @@
     "trailing": true,
     "undef": true,
     "unused": true,
-
+    "-W024":true,
     "globals": {
         "angular": true
 

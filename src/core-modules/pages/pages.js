@@ -18,7 +18,7 @@ function createModule($uiActions,$config)
 
 	function registerUiActions()
 	{
-    $uiActions.registerAction('getPages',[],getPages);
+    $uiActions.registerAction('pages_getPages',[],getPages);
 	}
 
 

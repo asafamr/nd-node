@@ -1,15 +1,15 @@
 [![Stories in Ready](https://badge.waffle.io/asafamr/nd-node.png?label=ready&title=Ready)](https://waffle.io/asafamr/nd-node)
 # ND-Node
 
-NDJS node back end
+NDJS node backend
 
-# Usage
+[NDJS website](http://ndjs.io)
 
-soon
+[NDJS API](http://ndjs.io/api.html)
 
 # License
 
-AGPL 
+AGPL
 
 Packaged software sources not required to be disclosed
 

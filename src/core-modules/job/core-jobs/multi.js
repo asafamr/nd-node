@@ -1,73 +1,40 @@
 /**
 @name multi corejob
 @description run sub jobs one after the other
-
+@param subjobs {Array}
+@example {type:"multi",settings:{subJobs:[{another-job1},{another-job2}]}
 **/
 'use strict';
-var BBPromise=require('bluebird');
 
-module.exports=create;
-create.jobType='multi';
+module.exports=createModule;
+createModule.moduleName='$job_multi';
+createModule.$inject=['$job','$logger'];
 
-function create(settings,logger,$backend)
+var BBPromise =require('bluebird');
+
+function createModule($job,$logger)
 {
-  var jobPromise=getPromise();
-  jobPromise.shouldCancel=shouldCancel;
-  var currentJobMeta=settings.subJobs[0];
-  var currentJobPromise=null;
-  var canceled=false;
-  jobPromise.getProgress=getProgress;
+  $job.registerJobType(startJob,'multi');
 
-  return jobPromise;
-
-
-  function getPromise()
+  function startJob(settings,callbackProgress,callbackCancelCalled,callbackPend,callbackAbort)
   {
-    return BBPromise.each(settings.subJobs,function(subJob){
-        if(canceled)
-        {
-          return;
-        }
-        currentJobMeta=subJob;
-        currentJobPromise=$backend.getModule('$job').startJob(subJob.type,subJob.settings);
-        return currentJobPromise;
-    });
-  }
-  function shouldCancel()
-  {
-    canceled=true;
-    if(currentJobPromise && currentJobPromise.shouldCancel)
+    if(!settings.subJobs || !Array.isArray(settings.subJobs) )
     {
-      currentJobPromise.shouldCancel();
+      $logger.error('multi job settings.subJobs is not an array');
+      throw new Error('multi job settings.subJobs is not an array');
     }
-  }
-
-
-
-  function getProgress()
-  {
-    var totalDone=0;
-
-    var jobsDone=true;
-    var eachProgress=1.0/settings.subJobs.length;
-    settings.subJobs.forEach(function(subJob)
-    {
-      if(!currentJobPromise)
-      {
-        return;
-      }
-      if(subJob===currentJobMeta)
-      {
-        var progress= currentJobPromise.hasOwnProperty('getProgress') && currentJobPromise.getProgress() || 0;
-        totalDone+=progress*eachProgress;
-        jobsDone=false;
-      }
-      else if(jobsDone){
-        totalDone+=eachProgress;
-      }
-
-
+    return BBPromise.each(settings.subJobs,function(subJob,index,length){
+        if(callbackCancelCalled())
+        {
+          throw new Error('NDJS_ABORT');
+        }
+        var thisJobProgressCallback=function(subProgress)
+        {
+          callbackProgress(index * 1.0/length +subProgress/length);
+        };
+        thisJobProgressCallback(0);
+        return $job.startJob(subJob.type,subJob.settings,thisJobProgressCallback,callbackCancelCalled,callbackPend,callbackAbort);
     });
-     return totalDone;
   }
 }
+

@@ -35,7 +35,7 @@ function createModule()
 	* @param name {String} name of event
 	* @param paramNames {Array} array of paramerter names
 	* @param action {Function} callback of action( could be syncronous or retrun a pormise)
-	* @example rregisterAction('getNotificationsFromIdx',['idx'],getNotificationsFromIdx)
+	* @example rregisterAction('notifications_getNotificationsFromIdx',['idx'],getNotificationsFromIdx)
 	**/
 	function registerAction(name,paramNames,action)
 	{
@@ -74,7 +74,7 @@ function createModule()
 					resolve(uiActions[name].action.apply(null,paramArray));
 			}).then(function(result)
 		{
-			if(!result)
+			if(result!==false && !result)
 			{
 				return {};//so we always return a valid json
 			}

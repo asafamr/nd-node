@@ -22,7 +22,7 @@ describe('notifications module', function(){
 				function(name,argNames,callback)
 			{
 				void callback;
-				expect(name).to.equal('getNotificationsFromIdx');
+				expect(name).to.equal('notifications_getFromIdx');
 				expect(argNames).to.deep.equal(['idx']);
 				run='all ok';
 			}};

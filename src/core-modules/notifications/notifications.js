@@ -13,16 +13,19 @@ createModule.$inject=['$uiActions'];
 
 function createModule($uiActions)
 {
+	var notificationsQueue=[];
+	var notificationsListeners=[];
+
 	var notificationsModule={};
 	notificationsModule.getNotificationsFromIdx=getNotificationsFromIdx;
 	notificationsModule.pushNotification=pushNotification;
-	var notificationsQueue=[];
+	notificationsModule.listenToNotifications=listenToNotifications;
 	registerUiActions();
 	return notificationsModule;
 
 	function registerUiActions()
 	{
-		$uiActions.registerAction('getNotificationsFromIdx',['idx'],getNotificationsFromIdx);
+		$uiActions.registerAction('notifications_getFromIdx',['idx'],getNotificationsFromIdx);
 	}
 	/**
 	* @name getNotificationsFromIdx
@@ -41,14 +44,30 @@ function createModule($uiActions)
 	}
 	/**
 	* @name pushNotification
-	* @description push notfications to UI
+	* @description push notfications to UI and custom listeners
 	* @param name {String} name of event
 	* @param value {Object} event data
 	* @example pushNotification('downloadComplete',{package:abc.zip})
 	**/
 	function pushNotification(name,value)
 	{
-		notificationsQueue.push({name:name,value:value,time: Date.now()});
+		var notification={name:name,value:value,time: Date.now()};
+		notificationsQueue.push(notification);
+		notificationsListeners.forEach(function(listener)
+		{
+			listener(notification);
+		});
+	}
+
+	/**
+	* @name listenToNotifications
+	* @description push notfications to a custom listener for easier server side global notifications
+	* @param listener {Function} will be called with notification full data {name,value,time}
+	* @example listenToNotifications(myCallback)
+	**/
+	function listenToNotifications(listener)
+	{
+		notificationsListeners.push(listener);
 	}
 
 }
