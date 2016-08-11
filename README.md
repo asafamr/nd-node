@@ -15,8 +15,4 @@ Check out our [getting started guide](http://ndjs.io/started.html)
 
 # License
 
-AGPL
-
-Packaged software sources not required to be disclosed
-
-Contact me if you have a non-GPL poilcy
+MIT
